@@ -802,14 +802,25 @@ pub fn delete_media(
     let mut errors = Vec::new();
 
     for p in &paths {
+        // Try the Recycle Bin first (trash crate). If that fails (e.g. the
+        // drive doesn't support Recycle Bin), fall back to permanent deletion.
         match trash::delete(p) {
             Ok(()) => {
                 let _ = state.library.forget(p);
                 deleted += 1;
             }
-            Err(e) => {
-                failed += 1;
-                errors.push(format!("{}: {}", file_name_from_path(p), e));
+            Err(_) => {
+                // Fallback: permanent delete
+                match std::fs::remove_file(p) {
+                    Ok(()) => {
+                        let _ = state.library.forget(p);
+                        deleted += 1;
+                    }
+                    Err(e) => {
+                        failed += 1;
+                        errors.push(format!("{}: {}", file_name_from_path(p), e));
+                    }
+                }
             }
         }
     }

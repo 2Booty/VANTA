@@ -76,7 +76,7 @@ export default function DuplicatesModal() {
     if (dupPaths.length === 0) return;
     if (
       !window.confirm(
-        `Move ${dupPaths.length} duplicate file(s) to the Recycle Bin? One copy of each is kept.`
+        `Delete ${dupPaths.length} duplicate file(s)? Files will be sent to the Recycle Bin if available, otherwise permanently deleted. One copy of each is kept.`
       )
     )
       return;
