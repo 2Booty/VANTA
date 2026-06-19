@@ -11,7 +11,7 @@ export default function TitleBar() {
     authStatus === "ok"
       ? { cls: "ok", txt: `Connected · @${me?.username ?? ""}` }
       : authStatus === "loading"
-      ? { cls: "warn", txt: "Connecting…" }
+      ? { cls: "warn", txt: "Connecting..." }
       : authStatus === "error"
       ? { cls: "err", txt: "Auth error" }
       : { cls: "", txt: "Disconnected" };

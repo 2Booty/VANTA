@@ -1,6 +1,6 @@
 import { invoke, convertFileSrc } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
-import { revealItemInDir, openPath } from "@tauri-apps/plugin-opener";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { open as openDialog, save as saveDialog } from "@tauri-apps/plugin-dialog";
 
 // ─── Types ───────────────────────────────────────────────────────────────
@@ -273,7 +273,6 @@ export function onDedupeProgress(cb: (p: DedupeProgress) => void): Promise<Unlis
 
 export const fileSrc = (path: string) => convertFileSrc(path);
 export const reveal = (path: string) => revealItemInDir(path).catch(() => {});
-export const openFile = (path: string) => openPath(path).catch(() => {});
 export async function pickFolder(): Promise<string | null> {
   const res = await openDialog({ directory: true, multiple: false });
   return typeof res === "string" ? res : null;

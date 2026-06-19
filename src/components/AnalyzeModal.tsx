@@ -76,7 +76,7 @@ export default function AnalyzeModal() {
             <div className="mt">{title}</div>
             <div className="ms">
               {running
-                ? "Working out exactly what to download…"
+                ? "Working out exactly what to download..."
                 : a.status === "error"
                 ? "Something went wrong"
                 : "Here's the plan"}
@@ -99,7 +99,7 @@ export default function AnalyzeModal() {
                 <div>
                   {a.phase === "sizing" ? (
                     <>
-                      Calculating sizes…{" "}
+                      Calculating sizes...{" "}
                       <b style={{ color: "var(--ink)" }}>
                         {a.sized}/{a.sizeTotal}
                       </b>
@@ -107,7 +107,7 @@ export default function AnalyzeModal() {
                   ) : (
                     <>
                       Fetching posts, stories &amp; messages
-                      {a.creatorTotal > 1 ? ` (creator ${a.creatorIndex}/${a.creatorTotal})` : ""}…
+                      {a.creatorTotal > 1 ? ` (creator ${a.creatorIndex}/${a.creatorTotal})` : ""}...
                     </>
                   )}
                   {a.current && a.mode === "all" ? (

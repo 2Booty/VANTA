@@ -25,12 +25,6 @@ export function fileName(path: string): string {
   return path.split(/[\\/]/).pop() || path;
 }
 
-export function formatDate(ts: number): string {
-  if (!ts) return "—";
-  const d = new Date(ts * 1000);
-  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-}
-
 export function formatTime(ts: number): string {
   if (!ts) return "—";
   const d = new Date(ts * 1000);

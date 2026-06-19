@@ -32,9 +32,6 @@ export default function Downloads() {
   const failed = jobs.filter((j) => j.status === "error" || j.status === "canceled");
   const doneCount = jobs.filter((j) => j.status === "done" || j.status === "skipped").length;
 
-  // Active + paused share the progress-bar display; paused gets a resume button.
-  const inProgress = [...active, ...paused];
-
   return (
     <div className="panel">
       <div className="phead">
@@ -63,14 +60,9 @@ export default function Downloads() {
           </div>
         ) : (
           <>
-            {inProgress.map((j) => {
+            {active.map((j) => {
               const pct = j.total > 0 ? Math.min(100, (j.done / j.total) * 100) : 0;
               const eta = j.speed > 0 && j.total > j.done ? (j.total - j.done) / j.speed : 0;
-              const isPaused = j.status === "paused";
-              const retryingIn =
-                j.next_retry_at && j.next_retry_at * 1000 > Date.now()
-                  ? Math.max(0, Math.round(j.next_retry_at - Date.now() / 1000))
-                  : 0;
               return (
                 <div className="dl-active" key={j.id}>
                   <div className="top">
@@ -91,20 +83,6 @@ export default function Downloads() {
                             retry #{j.retry_count}
                           </span>
                         )}
-                        {retryingIn > 0 && (
-                          <span
-                            className="pillx mono"
-                            style={{
-                              marginLeft: 6,
-                              fontSize: 10,
-                              color: "var(--dim)",
-                              border: "1px solid var(--dim)",
-                            }}
-                            title={`Next retry scheduled`}
-                          >
-                            retrying in {retryingIn}s
-                          </span>
-                        )}
                       </div>
                       <div className="sz mono">
                         {j.creator} · {formatBytes(j.done)}
@@ -112,52 +90,73 @@ export default function Downloads() {
                       </div>
                     </div>
                     <div className="controls">
-                      {!isPaused && (
-                        <div
-                          className="icon-btn"
-                          title="Pause"
-                          onClick={() => api.dlPauseJob(j.id)}
-                        >
-                          <Pause size={15} />
-                        </div>
-                      )}
-                      {isPaused && (
-                        <div
-                          className="icon-btn"
-                          title="Resume"
-                          onClick={() => api.dlResumeJob(j.id)}
-                        >
-                          <Play size={15} />
-                        </div>
-                      )}
+                      <div
+                        className="icon-btn"
+                        title="Pause"
+                        onClick={() => api.dlPauseJob(j.id)}
+                      >
+                        <Pause size={15} />
+                      </div>
                       <div className="icon-btn danger" title="Cancel" onClick={() => api.dlCancel(j.id)}>
                         <X size={15} />
                       </div>
                     </div>
                   </div>
                   <div className="track">
-                    <div
-                      className="fill"
-                      style={{
-                        width: `${pct || 4}%`,
-                        background: isPaused ? "var(--dim)" : undefined,
-                      }}
-                    />
+                    <div className="fill" style={{ width: `${pct || 4}%` }} />
                   </div>
                   <div className="pl2 mono">
+                    <span>{j.kind}</span>
                     <span>
-                      {j.kind}
-                      {isPaused ? " · paused" : ""}
-                    </span>
-                    <span>
-                      {j.total > 0 ? `${Math.round(pct)}%` : "starting…"}
-                      {j.speed > 0 && !isPaused ? ` · ${formatSpeed(j.speed)}` : ""}
-                      {eta > 0 && !isPaused ? ` · ETA ${formatETA(eta)}` : ""}
+                      {j.total > 0 ? `${Math.round(pct)}%` : "starting..."}
+                      {j.speed > 0 ? ` · ${formatSpeed(j.speed)}` : ""}
+                      {eta > 0 ? ` · ETA ${formatETA(eta)}` : ""}
                     </span>
                   </div>
                 </div>
               );
             })}
+
+            {paused.length > 0 && (
+              <div className="sect">
+                <h3>Paused · {paused.length} job{paused.length === 1 ? "" : "s"}</h3>
+                {paused.map((j) => {
+                  const pct = j.total > 0 ? Math.min(100, (j.done / j.total) * 100) : 0;
+                  return (
+                    <div className="dl-active" key={j.id}>
+                      <div className="top">
+                        <div style={{ minWidth: 0 }}>
+                          <div className="fn">{fileName(j.filename)}</div>
+                          <div className="sz mono">
+                            {j.creator} · {formatBytes(j.done)}
+                            {j.total > 0 ? ` / ${formatBytes(j.total)}` : ""}
+                          </div>
+                        </div>
+                        <div className="controls">
+                          <div
+                            className="icon-btn"
+                            title="Resume"
+                            onClick={() => api.dlResumeJob(j.id)}
+                          >
+                            <Play size={15} />
+                          </div>
+                          <div className="icon-btn danger" title="Cancel" onClick={() => api.dlCancel(j.id)}>
+                            <X size={15} />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="track">
+                        <div className="fill" style={{ width: `${pct || 4}%`, background: "var(--dim)" }} />
+                      </div>
+                      <div className="pl2 mono">
+                        <span>{j.kind} · paused</span>
+                        <span>{j.total > 0 ? `${Math.round(pct)}%` : ""}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
             {(queued.length > 0 || failed.length > 0) && (
               <div className="sect">
@@ -190,7 +189,7 @@ export default function Downloads() {
                             title="Retry"
                             onClick={() => {
                               api.dlRetry(j.id);
-                              toast("Retrying…");
+                              toast("Retrying...");
                             }}
                           >
                             <RotateCcw size={14} />

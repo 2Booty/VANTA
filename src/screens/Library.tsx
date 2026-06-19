@@ -89,7 +89,7 @@ export default function Library() {
           </div>
         ) : subsLoading ? (
           <div className="center-load">
-            <div className="spinner" /> Loading subscriptions…
+            <div className="spinner" /> Loading subscriptions...
           </div>
         ) : filtered.length === 0 ? (
           <div className="empty">
@@ -169,7 +169,7 @@ export default function Library() {
                   <div style={{ padding: "2px 4px 12px 16px" }}>
                     {postsLoading[id] ? (
                       <div className="center-load" style={{ padding: 20, justifyContent: "flex-start" }}>
-                        <div className="spinner" /> Loading posts…
+                        <div className="spinner" /> Loading posts...
                       </div>
                     ) : posts && posts.length > 0 ? (
                       <div style={{ fontSize: 12.5, color: "var(--dim)", display: "flex", gap: 14, alignItems: "center" }}>

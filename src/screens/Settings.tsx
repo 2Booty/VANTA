@@ -28,6 +28,7 @@ export default function Settings() {
   const authenticate = useStore((s) => s.authenticate);
   const patchConfig = useStore((s) => s.patchConfig);
   const lock = useStore((s) => s.lock);
+  const toast = useStore((s) => s.toast);
 
   const [form, setForm] = useState<Config | null>(config);
   const [pinOpen, setPinOpen] = useState(false);
@@ -59,6 +60,16 @@ export default function Settings() {
   const reconnect = async () => {
     await saveConfig(merged());
     authenticate();
+  };
+  const [testing, setTesting] = useState(false);
+  const testConnection = async () => {
+    setTesting(true);
+    await saveConfig(merged());
+    await authenticate();
+    setTesting(false);
+    const status = useStore.getState().authStatus;
+    if (status === "ok") toast("Connection successful");
+    else toast("Connection failed", "err");
   };
   const browse = async () => {
     const dir = await pickFolder();
@@ -492,12 +503,15 @@ export default function Settings() {
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <button className="btn pri" onClick={save}>
             <Save size={14} /> Save settings
           </button>
           <button className="btn" onClick={reconnect}>
             <RefreshCw size={14} /> Save &amp; reconnect
+          </button>
+          <button className="btn ghost" onClick={testConnection} disabled={testing}>
+            {testing ? <RefreshCw size={14} className="spinning" /> : <RefreshCw size={14} />} Test
           </button>
         </div>
       </div>

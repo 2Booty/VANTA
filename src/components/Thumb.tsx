@@ -2,7 +2,19 @@ import { useEffect, useRef, useState } from "react";
 import { api, fileSrc } from "../lib/api";
 
 // Session cache of generated thumbnail URLs, keyed by source path.
+// Capped at 500 entries (LRU-style: oldest evicted when full) to prevent
+// unbounded memory growth with very large libraries.
 const cache = new Map<string, string>();
+const CACHE_MAX = 500;
+
+function cacheSet(key: string, val: string) {
+  if (cache.size >= CACHE_MAX) {
+    // Evict the first entry (oldest insertion order)
+    const firstKey = cache.keys().next().value;
+    if (firstKey) cache.delete(firstKey);
+  }
+  cache.set(key, val);
+}
 
 /**
  * Shows a cached, downscaled JPEG thumbnail for a photo. The thumbnail is only
@@ -32,13 +44,13 @@ export default function Thumb({ path, className }: { path: string; className?: s
               .thumb(path)
               .then((p) => {
                 const u = fileSrc(p);
-                cache.set(path, u);
+                cacheSet(path, u);
                 setSrc(u);
               })
               .catch(() => {
                 // Fall back to the full-resolution image if thumbnailing fails.
                 const u = fileSrc(path);
-                cache.set(path, u);
+                cacheSet(path, u);
                 setSrc(u);
               });
           }

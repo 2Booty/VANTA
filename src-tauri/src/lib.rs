@@ -99,7 +99,25 @@ pub fn run() {
 
                 let mut last_run: Option<Instant> = None;
                 loop {
-                    tokio::time::sleep(Duration::from_secs(300)).await;
+                    // Read config to determine sleep duration
+                    let hours = app_handle.state::<AppState>()
+                        .config.lock().unwrap()
+                        .auto_sync_hours.max(1) as u64;
+
+                    // Sleep until the next sync is due, checking every 60s if
+                    // config changed. This avoids waking every 5 minutes when
+                    // the sync interval might be 12+ hours.
+                    let sleep_secs = if last_run.is_none() {
+                        // First run: wait 5 minutes then check
+                        300
+                    } else {
+                        // Calculate remaining time until next sync
+                        let elapsed = last_run.unwrap().elapsed().as_secs();
+                        let remaining = hours.saturating_mul(3600).saturating_sub(elapsed);
+                        // Cap at 60s so config changes are picked up reasonably
+                        remaining.min(60).max(1)
+                    };
+                    tokio::time::sleep(Duration::from_secs(sleep_secs)).await;
 
                     let (enabled, hours, new_only, creds, dl_dir, vq, ua, max, bw, opts) = {
                         let st = app_handle.state::<AppState>();

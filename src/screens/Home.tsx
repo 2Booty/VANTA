@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { RefreshCw, DownloadCloud, Check, AlertCircle, ArrowDown, RefreshCcw, Clock, Image as ImageIcon, Film, Music, File } from "lucide-react";
 import { useStore } from "../store";
@@ -27,32 +27,33 @@ export default function Home() {
     return () => clearInterval(t);
   }, [loadAutoSyncStatus]);
 
-  const storage = media.reduce((a, m) => a + (m.bytes || 0), 0);
-  const active = jobs.filter((j) => j.status === "queued" || j.status === "active").length;
-  const recent = [...jobs]
-    .filter((j) => ["done", "skipped", "error", "active"].includes(j.status))
-    .slice(-6)
-    .reverse();
-
-  // Storage breakdown by kind
-  const breakdown = media.reduce(
-    (acc, m) => {
-      const k = m.kind as "photo" | "video" | "audio" | "other";
-      acc[k] = (acc[k] || 0) + (m.bytes || 0);
-      return acc;
-    },
-    {} as Record<string, number>,
+  const storage = useMemo(() => media.reduce((a, m) => a + (m.bytes || 0), 0), [media]);
+  const active = useMemo(() => jobs.filter((j) => j.status === "queued" || j.status === "active").length, [jobs]);
+  const recent = useMemo(() =>
+    [...jobs]
+      .filter((j) => ["done", "skipped", "error", "active"].includes(j.status))
+      .slice(-6)
+      .reverse(),
+    [jobs],
   );
-  const photoBytes = breakdown.photo || 0;
-  const videoBytes = breakdown.video || 0;
-  const audioBytes = breakdown.audio || 0;
-  const otherBytes = breakdown.other || 0;
-  const breakdownRows: { label: string; bytes: number; icon: typeof ImageIcon }[] = [
-    { label: "Photos", bytes: photoBytes, icon: ImageIcon },
-    { label: "Videos", bytes: videoBytes, icon: Film },
-    { label: "Audio", bytes: audioBytes, icon: Music },
-    { label: "Other", bytes: otherBytes, icon: File },
-  ];
+
+  // Storage breakdown by kind — memoized so it only recomputes when media changes
+  const breakdownRows = useMemo(() => {
+    const breakdown = media.reduce(
+      (acc, m) => {
+        const k = m.kind as "photo" | "video" | "audio" | "other";
+        acc[k] = (acc[k] || 0) + (m.bytes || 0);
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+    return [
+      { label: "Photos", bytes: breakdown.photo || 0, icon: ImageIcon },
+      { label: "Videos", bytes: breakdown.video || 0, icon: Film },
+      { label: "Audio", bytes: breakdown.audio || 0, icon: Music },
+      { label: "Other", bytes: breakdown.other || 0, icon: File },
+    ];
+  }, [media]);
 
   // Auto-sync status summary
   const autoSyncEnabled = config?.auto_sync_enabled ?? false;
@@ -78,7 +79,7 @@ export default function Home() {
             onClick={() => {
               loadSubs();
               scanLibrary();
-              toast("Refreshing…");
+              toast("Refreshing...");
             }}
           >
             <RefreshCw size={14} /> Refresh

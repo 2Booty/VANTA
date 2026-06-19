@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { useStore } from "../store";
 import { fileSrc, reveal } from "../lib/api";
-import { fileName } from "../lib/format";
+import { fileName, formatBytes } from "../lib/format";
 import VideoThumb from "./VideoThumb";
 
 function fmt(s: number): string {
@@ -30,17 +30,6 @@ function fmt(s: number): string {
   const m = Math.floor(s / 60);
   const sec = Math.floor(s % 60);
   return `${m}:${sec.toString().padStart(2, "0")}`;
-}
-function formatBytes(n: number): string {
-  if (n <= 0) return "—";
-  const u = ["B", "KB", "MB", "GB"];
-  let i = 0;
-  let v = n;
-  while (v >= 1024 && i < u.length - 1) {
-    v /= 1024;
-    i++;
-  }
-  return `${v.toFixed(v < 10 && i > 0 ? 1 : 0)} ${u[i]}`;
 }
 
 const SPEEDS = [0.5, 1, 1.25, 1.5, 2];

@@ -12,6 +12,7 @@ import LockScreen from "./components/LockScreen";
 import ContextMenu from "./components/ContextMenu";
 import CommandPalette from "./components/CommandPalette";
 import KeyboardHelp from "./components/KeyboardHelp";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./screens/Home";
 import Library from "./screens/Library";
 import Gallery from "./screens/Gallery";
@@ -219,7 +220,9 @@ export default function App() {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.22, ease: "easeOut" }}
             >
-              <Screen />
+              <ErrorBoundary>
+                <Screen />
+              </ErrorBoundary>
             </motion.div>
           </AnimatePresence>
         </div>

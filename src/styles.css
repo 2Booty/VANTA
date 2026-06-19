@@ -609,6 +609,8 @@ select.tfield { font-family: inherit; cursor: pointer; }
 .chip-scroll::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 4px; }
 .chip.sm { font-size: 11px; padding: 4px 10px; flex-shrink: 0; }
 
+.btn .spinning, .spinning { animation: spin 0.8s linear infinite; }
+
 /* ─── credential blur ─── */
 .cred-blur .tfield { filter: blur(8px); transition: filter 0.2s; }
 .cred-blur .tfield:focus { filter: none; }

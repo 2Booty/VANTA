@@ -502,7 +502,7 @@ export default function Gallery() {
       <div className="scroll" ref={scrollRef}>
         {mediaLoading ? (
           <div className="center-load">
-            <div className="spinner" /> Scanning library…
+            <div className="spinner" /> Scanning library...
           </div>
         ) : list.length === 0 ? (
           <div className="empty">

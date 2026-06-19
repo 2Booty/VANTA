@@ -40,9 +40,9 @@ function ProgressBar({ saved, total }: { saved: number; total: number }) {
 }
 
 const STATUS_ICON: Record<string, ReactNode> = {
-  done: <CheckCircle2 size={13} style={{ color: "var(--ok, #4ade80)" }} />,
-  error: <XCircle size={13} style={{ color: "var(--err, #f87171)" }} />,
-  skipped: <Clock size={13} style={{ color: "var(--faint, #888)" }} />,
+  done: <CheckCircle2 size={13} style={{ color: "var(--good)" }} />,
+  error: <XCircle size={13} style={{ color: "var(--bad)" }} />,
+  skipped: <Clock size={13} style={{ color: "var(--faint)" }} />,
 };
 
 export default function Insights() {
@@ -266,7 +266,7 @@ export default function Insights() {
                   <div key={c.name} className="bar-row" style={{ display: "block", marginBottom: 10 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                       <span className="bar-label">{c.name}</span>
-                      <span className="bar-val mono" style={{ color: c.saved >= c.total ? "var(--ok, #4ade80)" : "var(--faint, #888)" }}>
+                      <span className="bar-val mono" style={{ color: c.saved >= c.total ? "var(--good)" : "var(--faint)" }}>
                         {c.saved}/{c.total} posts saved
                       </span>
                     </div>

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Users, LayoutGrid, BarChart3, Download, Settings,
-  Search, RefreshCw, Copy, Star,
+  Search, RefreshCw, Copy, Star, Palette,
 } from "lucide-react";
 import { useStore, type View } from "../store";
 
@@ -42,9 +42,12 @@ export default function CommandPalette() {
     { id: "insights", label: "Go to Insights", icon: BarChart3, action: () => go("insights") },
     { id: "downloads", label: "Go to Downloads", icon: Download, action: () => go("downloads") },
     { id: "settings", label: "Go to Settings", icon: Settings, action: () => go("settings") },
-    { id: "rescan", label: "Rescan library", icon: RefreshCw, action: () => { scanLibrary(); toast("Rescanning…"); setOpen(false); } },
+    { id: "rescan", label: "Rescan library", icon: RefreshCw, action: () => { scanLibrary(); toast("Rescanning..."); setOpen(false); } },
     { id: "dedupe", label: "Find duplicates", icon: Copy, action: () => { openDuplicates(); setOpen(false); } },
     { id: "fav", label: "Go to Favorites", icon: Star, action: () => { useStore.getState().setFilter("favorites"); go("gallery"); } },
+    { id: "theme-graphite", label: "Switch to Graphite theme", icon: Palette, action: () => { useStore.getState().applyTheme("graphite"); setOpen(false); } },
+    { id: "theme-bone", label: "Switch to Bone theme", icon: Palette, action: () => { useStore.getState().applyTheme("bone"); setOpen(false); } },
+    { id: "theme-clay", label: "Switch to Clay theme", icon: Palette, action: () => { useStore.getState().applyTheme("clay"); setOpen(false); } },
   ];
 
   const filtered = commands.filter((c) =>
@@ -89,7 +92,7 @@ export default function CommandPalette() {
               <Search size={16} />
               <input
                 ref={inputRef}
-                placeholder="Type a command…"
+                placeholder="Type a command..."
                 value={query}
                 onChange={(e) => { setQuery(e.target.value); setIdx(0); }}
                 onKeyDown={onKey}

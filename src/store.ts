@@ -105,20 +105,16 @@ interface State {
   query: string;
   filter: Filter;
   creatorFilter: string | null;
-  selectedCreators: string[];
   sortBy: SortBy;
   groupBy: GroupBy;
   minRating: number;
-  untaggedOnly: boolean;
   dateFrom: string;
   dateTo: string;
-  currentCollection: number | null;
 
   selMode: boolean;
   selected: string[];
 
   jobs: Job[];
-  jobSpeeds: Record<number, number>;
 
   lightbox: LightboxState;
   slideshowActive: boolean;
@@ -150,15 +146,11 @@ interface State {
   setQuery: (q: string) => void;
   setFilter: (f: Filter) => void;
   setCreatorFilter: (c: string | null) => void;
-  toggleSelectedCreator: (c: string) => void;
-  clearSelectedCreators: () => void;
   setSortBy: (s: SortBy) => void;
   setGroupBy: (g: GroupBy) => void;
   setMinRating: (n: number) => void;
-  setUntaggedOnly: (on: boolean) => void;
   setDateFrom: (d: string) => void;
   setDateTo: (d: string) => void;
-  setCollectionFilter: (cid: number | null) => void;
   toggleFav: (path: string) => Promise<void>;
   rateMedia: (path: string, rating: number) => Promise<void>;
 
@@ -223,18 +215,14 @@ export const useStore = create<State>((set, get) => ({
   query: "",
   filter: "all",
   creatorFilter: null,
-  selectedCreators: [],
   sortBy: "newest",
   groupBy: "none",
   minRating: 0,
-  untaggedOnly: false,
   dateFrom: "",
   dateTo: "",
-  currentCollection: null,
   selMode: false,
   selected: [],
   jobs: [],
-  jobSpeeds: {},
   lightbox: { open: false, index: 0, items: [] },
   slideshowActive: false,
   toasts: [],
@@ -372,14 +360,7 @@ export const useStore = create<State>((set, get) => ({
 
   setQuery: (q) => set({ query: q }),
   setFilter: (f) => set({ filter: f }),
-  setCreatorFilter: (c) => set({ creatorFilter: c, selectedCreators: [], view: "gallery" }),
-  toggleSelectedCreator: (c) =>
-    set((s) => ({
-      selectedCreators: s.selectedCreators.includes(c)
-        ? s.selectedCreators.filter((x) => x !== c)
-        : [...s.selectedCreators, c],
-    })),
-  clearSelectedCreators: () => set({ selectedCreators: [] }),
+  setCreatorFilter: (c) => set({ creatorFilter: c, view: "gallery" }),
   setSortBy: (s) => {
     set({ sortBy: s });
     get().patchConfig({ gallery_sort: s });
@@ -389,10 +370,8 @@ export const useStore = create<State>((set, get) => ({
     get().patchConfig({ gallery_group: g });
   },
   setMinRating: (n) => set({ minRating: n }),
-  setUntaggedOnly: (on) => set({ untaggedOnly: on }),
   setDateFrom: (d) => set({ dateFrom: d }),
   setDateTo: (d) => set({ dateTo: d }),
-  setCollectionFilter: (cid) => set({ currentCollection: cid }),
 
   toggleFav: async (path) => {
     try {
@@ -438,17 +417,17 @@ export const useStore = create<State>((set, get) => ({
   clearSelection: () => set({ selected: [] }),
 
   setJobs: (jobs) => {
-    // Preserve live speeds from progress events
-    const speeds = get().jobSpeeds;
-    set({ jobs: jobs.map((j) => ({ ...j, speed: speeds[j.id] ?? j.speed })) });
+    // Use jobs as-is — speed is now injected via patchProgress only
+    set({ jobs });
   },
   patchProgress: (id, done, total, speed) =>
-    set((s) => ({
-      jobSpeeds: { ...s.jobSpeeds, [id]: speed },
-      jobs: s.jobs.map((j) =>
+    set((s) => {
+      // Update only the single job that changed, avoid full array copy
+      const jobs = s.jobs.map((j) =>
         j.id === id ? { ...j, done, total, speed } : j,
-      ),
-    })),
+      );
+      return { jobs };
+    }),
 
   openLightbox: (items, index) => set({ lightbox: { open: true, items, index } }),
   closeLightbox: () => set((s) => ({ lightbox: { ...s.lightbox, open: false }, slideshowActive: false })),
