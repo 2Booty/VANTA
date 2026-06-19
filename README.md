@@ -7,6 +7,20 @@ A premium, privacy-first desktop client for browsing and archiving OnlyFans cont
 ![React](https://img.shields.io/badge/React-19-blue?style=flat-square)
 ![Rust](https://img.shields.io/badge/Rust-stable-red?style=flat-square)
 
+## Screenshots
+
+### Home
+![Home](screenshots/Home.png)
+
+### Library
+![Library](screenshots/Library.png)
+
+### Gallery
+![Gallery](screenshots/Gallery.png)
+
+### Insights
+![Insights](screenshots/Insights.png)
+
 ## Features
 
 ### Download & Sync
