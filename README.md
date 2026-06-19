@@ -6,22 +6,39 @@ A premium, privacy-first desktop client for browsing and archiving OnlyFans cont
 ![Tauri](https://img.shields.io/badge/Tauri-2.0-orange?style=flat-square)
 ![React](https://img.shields.io/badge/React-19-blue?style=flat-square)
 ![Rust](https://img.shields.io/badge/Rust-stable-red?style=flat-square)
+![Platform](https://img.shields.io/badge/Platform-Windows-blue?style=flat-square)
+![License](https://img.shields.io/badge/License-Apache--2.0-green?style=flat-square)
+
+> ⚠️ **Disclaimer:** This project is for educational and personal archival purposes only. It is not affiliated with, endorsed by, or sponsored by OnlyFans. Users are responsible for complying with the terms of service of any platform they interact with. All content downloaded using this tool is stored locally and remains the property of its respective creators.
+
+---
+
+## Table of Contents
+
+- [Screenshots](#screenshots)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Getting Started](#getting-started)
+- [Themes](#themes)
+- [Privacy](#privacy)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Screenshots
 
-### Home
-![Home](screenshots/Home.png)
+| Home | Library |
+|:---:|:---:|
+| ![Home](screenshots/Home.png) | ![Library](screenshots/Library.png) |
 
-### Library
-![Library](screenshots/Library.png)
-
-### Gallery
-![Gallery](screenshots/Gallery.png)
-
-### Insights
-![Insights](screenshots/Insights.png)
+| Gallery | Insights |
+|:---:|:---:|
+| ![Gallery](screenshots/Gallery.png) | ![Insights](screenshots/Insights.png) |
 
 ## Features
+
+<details open>
+<summary><b>Click to expand/collapse</b></summary>
 
 ### Download & Sync
 - **Full archive downloads** — Posts, archived posts, stories, highlights, and DMs from any creator
@@ -50,7 +67,6 @@ A premium, privacy-first desktop client for browsing and archiving OnlyFans cont
 - **Custom video player** — Scrub bar, volume, playback speed (0.5x-2x), frame capture
 - **Audio player** — Custom UI with seek bar and volume for audio content
 - **Slideshow mode** — Auto-advance through items
-- **Keyboard shortcuts** — F (favorite), R (reveal), S (slideshow), arrows (navigate), Space (play/pause)
 
 ### Privacy & Security
 - **PIN lock** — PBKDF2-SHA256 hashed PIN (100k iterations), backward-compatible with legacy SHA-1
@@ -76,6 +92,8 @@ A premium, privacy-first desktop client for browsing and archiving OnlyFans cont
 - **Close-to-tray** — Keep running in background when closed
 - **Command palette** — Ctrl+K to quick-switch views and run commands
 
+</details>
+
 ## Architecture
 
 ```
@@ -100,6 +118,20 @@ A premium, privacy-first desktop client for browsing and archiving OnlyFans cont
 └────────────────────────────────────────────────────────────────┘
 ```
 
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl + K` | Open command palette |
+| `?` | Show keyboard shortcuts |
+| `←` `→` | Navigate media in lightbox |
+| `Space` | Play / pause video |
+| `F` | Toggle favorite (in lightbox) |
+| `R` | Reveal file in Explorer (in lightbox) |
+| `S` | Toggle slideshow (in lightbox) |
+| `Esc` | Close lightbox / menu |
+| `Ctrl + Shift + H` | Panic — hide & lock VANTA |
+
 ## Getting Started
 
 ### Prerequisites
@@ -122,20 +154,34 @@ This produces a Windows installer and standalone `.exe` in `src-tauri/target/rel
 ## Themes
 
 VANTA ships with three built-in themes, plus accent color customization:
-- **Graphite** (default) — Cool monochrome dark
-- **Bone** — Warm light/paper
-- **Clay** — Warm dark/earthy
+
+| Theme | Description |
+|---|---|
+| **Graphite** (default) | Cool monochrome dark |
+| **Bone** | Warm light/paper |
+| **Clay** | Warm dark/earthy |
 
 All themes persist across restarts and can be combined with any accent color.
 
 ## Privacy
 
 VANTA is designed with privacy as a first-class concern:
+
 - All data is stored locally — nothing is sent to any server except the OnlyFans API
 - Credentials are stored in a local config file, never transmitted except to OnlyFans
 - The SQLite library database contains only file paths, favorites, tags, ratings, and sync metadata — no media content
 - Downloaded files are stored in their original format on your local filesystem
 - No telemetry, analytics, or tracking of any kind
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a pull request or open an issue.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a pull request
 
 ## License
 
