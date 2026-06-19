@@ -1,0 +1,42 @@
+[package]
+name = "vanta-app"
+version = "1.1.0"
+description = "VANTA — OnlyFans content scraper & gallery"
+authors = ["VANTA"]
+edition = "2026"
+
+[lib]
+name = "vanta_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset", "tray-icon"] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", features = ["json", "stream", "native-tls"] }
+tokio = { version = "1", features = ["full"] }
+chrono = { version = "0.4", features = ["serde"] }
+rusqlite = { version = "0.40", features = ["bundled"] }
+sha1 = "0.10"
+hex = "0.4"
+dirs = "6"
+anyhow = "1"
+futures = "0.3"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+trash = "5.2.6"
+image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp", "gif", "bmp"] }
+fs4 = "1.1.0"
+tauri-plugin-notification = "2.3.3"
+tauri-plugin-global-shortcut = "2.3.2"
+tauri-plugin-window-state = "2"
+
+[profile.release]
+opt-level = 3
+lto = true
+strip = true
+codegen-units = 1

@@ -1,0 +1,21 @@
+# Build artifacts
+node_modules/
+dist/
+target/
+
+# IDE
+.vscode/
+.idea/
+.cursor/
+.superpowers/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime data — NEVER commit
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+config.json
