@@ -150,14 +150,16 @@ export default function Insights() {
       <div className="phead">
         <h1>Insights</h1>
         <span className="pm">your library at a glance</span>
-        <button
-          onClick={handleExport}
-          title="Export library to CSV"
-          style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 6 }}
-        >
-          <FileDown size={14} />
-          Export
-        </button>
+        <div className="right">
+          <button
+            className="btn ghost"
+            onClick={handleExport}
+            title="Export library to CSV"
+            style={{ padding: "7px 9px" }}
+          >
+            <FileDown size={14} />
+          </button>
+        </div>
       </div>
 
       <div className="scroll">
