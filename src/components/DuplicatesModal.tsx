@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { X, Copy, Trash2 } from "lucide-react";
+import { X, Copy, Trash2, CheckCircle2, AlertCircle } from "lucide-react";
 import { useStore } from "../store";
 import { api, type MediaEntry } from "../lib/api";
 import { formatBytes, fileName } from "../lib/format";
@@ -24,15 +25,17 @@ const toEntry = (p: string, size: number): MediaEntry => ({
 function DupThumb({
   path,
   kind,
+  deleted,
   onClick,
 }: {
   path: string;
   kind: "keep" | "dupe";
+  deleted?: boolean;
   onClick?: () => void;
 }) {
   return (
     <div
-      className={`dup-thumb ${kind}`}
+      className={`dup-thumb ${kind} ${deleted ? "deleted" : ""}`}
       title={fileName(path)}
       onClick={onClick}
       style={{ cursor: onClick ? "zoom-in" : undefined }}
@@ -41,6 +44,11 @@ function DupThumb({
         <VideoThumb path={path} className="dt-inner" />
       ) : (
         <Thumb path={path} className="dt-inner" />
+      )}
+      {deleted && (
+        <div className="dup-deleted-overlay">
+          <Trash2 size={16} />
+        </div>
       )}
     </div>
   );
@@ -52,6 +60,10 @@ export default function DuplicatesModal() {
   const scanLibrary = useStore((s) => s.scanLibrary);
   const openLightbox = useStore((s) => s.openLightbox);
   const toast = useStore((s) => s.toast);
+
+  const [deletedPaths, setDeletedPaths] = useState<Set<string>>(new Set());
+  const [failedPaths, setFailedPaths] = useState<Set<string>>(new Set());
+  const [isDeleting, setIsDeleting] = useState(false);
 
   if (!d.open) return null;
 
@@ -68,15 +80,58 @@ export default function DuplicatesModal() {
       )
     )
       return;
+
+    setIsDeleting(true);
     try {
-      await api.deleteMedia(dupPaths);
-      toast(`Removed ${dupPaths.length} duplicates`);
-      close();
-      scanLibrary();
+      const result = await api.deleteMedia(dupPaths);
+
+      // Track which files were actually deleted vs failed
+      const okPaths = new Set<string>();
+      const failPaths = new Set<string>();
+
+      // The backend returns counts + error messages with filenames, not paths.
+      // We need to match by path — if deleted < total, some failed.
+      // The errors array contains "filename: error" strings.
+      // Match errors to paths by filename.
+      const errorFileNames = new Set(
+        result.errors.map((e) => e.split(":")[0].trim())
+      );
+
+      for (const p of dupPaths) {
+        const fn = fileName(p);
+        if (errorFileNames.has(fn)) {
+          failPaths.add(p);
+        } else {
+          okPaths.add(p);
+        }
+      }
+
+      setDeletedPaths(okPaths);
+      setFailedPaths(failPaths);
+
+      if (result.failed === 0) {
+        toast(`Removed ${result.deleted} duplicates`);
+      } else if (result.deleted === 0) {
+        toast(`Failed to delete ${result.failed} files`, "err");
+      } else {
+        toast(
+          `Removed ${result.deleted}, ${result.failed} failed`,
+          "err"
+        );
+      }
+
+      // Rescan library after a delay so the UI updates
+      setTimeout(() => scanLibrary(), 500);
     } catch (e) {
       toast(String(e), "err");
+    } finally {
+      setIsDeleting(false);
     }
   };
+
+  const totalDeleted = deletedPaths.size;
+  const totalFailed = failedPaths.size;
+  const hasResults = totalDeleted > 0 || totalFailed > 0;
 
   return (
     <motion.div
@@ -99,9 +154,11 @@ export default function DuplicatesModal() {
             <div className="mt">Duplicate finder</div>
             <div className="ms">
               {running
-                ? "Scanning your library…"
+                ? "Scanning your library..."
                 : d.status === "error"
                 ? "Failed"
+                : hasResults
+                ? `Done — ${totalDeleted} removed${totalFailed > 0 ? `, ${totalFailed} failed` : ""}`
                 : `${groups.length} duplicate set${groups.length === 1 ? "" : "s"} found`}
             </div>
           </div>
@@ -120,7 +177,7 @@ export default function DuplicatesModal() {
               <div className="analyze-phase">
                 <div className="spinner" />
                 <div>
-                  Hashing files…{" "}
+                  Hashing files...{" "}
                   <b style={{ color: "var(--ink)" }}>
                     {d.done}/{d.total || "?"}
                   </b>
@@ -141,11 +198,31 @@ export default function DuplicatesModal() {
           ) : (
             <>
               <div style={{ fontSize: 12.5, color: "var(--dim)", marginBottom: 12 }}>
-                Keeping the first copy · reclaim ~
-                <b style={{ color: "var(--ink)" }}>{formatBytes(reclaim)}</b> ·{" "}
-                <span style={{ color: "var(--good)" }}>green = kept</span>,{" "}
-                <span style={{ color: "var(--bad)" }}>red = removed</span> · click any thumbnail to
-                preview
+                {hasResults ? (
+                  <>
+                    <span style={{ color: "var(--good)" }}>
+                      <CheckCircle2 size={12} style={{ display: "inline", verticalAlign: "-1px" }} />
+                      {" "}{totalDeleted} removed
+                    </span>
+                    {totalFailed > 0 && (
+                      <>
+                        {"  ·  "}
+                        <span style={{ color: "var(--bad)" }}>
+                          <AlertCircle size={12} style={{ display: "inline", verticalAlign: "-1px" }} />
+                          {" "}{totalFailed} failed
+                        </span>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    Keeping the first copy · reclaim ~
+                    <b style={{ color: "var(--ink)" }}>{formatBytes(reclaim)}</b> ·{" "}
+                    <span style={{ color: "var(--good)" }}>green = kept</span>,{" "}
+                    <span style={{ color: "var(--bad)" }}>red = removed</span> · click any thumbnail to
+                    preview
+                  </>
+                )}
               </div>
               {groups.map((g) => (
                 <div className="dup-group" key={g.hash}>
@@ -154,6 +231,7 @@ export default function DuplicatesModal() {
                       key={p}
                       path={p}
                       kind={idx === 0 ? "keep" : "dupe"}
+                      deleted={deletedPaths.has(p)}
                       onClick={() => openLightbox(g.paths.map((pp) => toEntry(pp, g.size)), idx)}
                     />
                   ))}
@@ -166,11 +244,16 @@ export default function DuplicatesModal() {
 
         <div className="modal-foot">
           <button className="btn ghost" onClick={close}>
-            Close
+            {hasResults ? "Done" : "Close"}
           </button>
-          {!running && groups.length > 0 && (
-            <button className="btn danger-btn" onClick={deleteDupes}>
-              <Trash2 size={14} /> Delete {dupPaths.length} duplicates
+          {!running && groups.length > 0 && !hasResults && (
+            <button
+              className="btn danger-btn"
+              onClick={deleteDupes}
+              disabled={isDeleting}
+            >
+              <Trash2 size={14} />
+              {isDeleting ? "Deleting..." : `Delete ${dupPaths.length} duplicates`}
             </button>
           )}
         </div>

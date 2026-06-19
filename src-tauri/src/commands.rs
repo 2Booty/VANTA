@@ -785,13 +785,47 @@ pub fn list_collection_items(state: State<'_, AppState>, cid: i64) -> Result<Vec
     state.library.collection_items(cid).map_err(|e| e.to_string())
 }
 
+#[derive(Serialize, Clone)]
+pub struct DeleteResult {
+    pub deleted: usize,
+    pub failed: usize,
+    pub errors: Vec<String>,
+}
+
 #[tauri::command]
-pub fn delete_media(state: State<'_, AppState>, paths: Vec<String>) -> Result<(), String> {
+pub fn delete_media(
+    state: State<'_, AppState>,
+    paths: Vec<String>,
+) -> Result<DeleteResult, String> {
+    let mut deleted = 0usize;
+    let mut failed = 0usize;
+    let mut errors = Vec::new();
+
     for p in &paths {
-        let _ = trash::delete(p);
-        let _ = state.library.forget(p);
+        match trash::delete(p) {
+            Ok(()) => {
+                let _ = state.library.forget(p);
+                deleted += 1;
+            }
+            Err(e) => {
+                failed += 1;
+                errors.push(format!("{}: {}", file_name_from_path(p), e));
+            }
+        }
     }
-    Ok(())
+
+    Ok(DeleteResult {
+        deleted,
+        failed,
+        errors,
+    })
+}
+
+fn file_name_from_path(p: &str) -> String {
+    p.split(|c| c == '\\' || c == '/')
+        .next_back()
+        .unwrap_or(p)
+        .to_string()
 }
 
 #[tauri::command]

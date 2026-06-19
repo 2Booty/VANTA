@@ -384,17 +384,22 @@ select.tfield { font-family: inherit; cursor: pointer; }
 .bar-fill { height: 100%; border-radius: 6px; background: var(--accent); }
 .bar-val { color: var(--dim); font-size: 11.5px; text-align: right; min-width: 64px; }
 
-/* ---------- duplicates ---------- */
+/* ─── duplicates ─── */
 .modal.modal-lg { width: 620px; }
 .dup-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .dup-group:last-child { border-bottom: 0; }
 .dup-thumb { width: 64px; height: 64px; border-radius: 8px; overflow: hidden; position: relative; flex-shrink: 0; }
 .dup-thumb.keep { outline: 2px solid var(--good); outline-offset: -2px; }
 .dup-thumb.dupe { outline: 2px solid var(--bad); outline-offset: -2px; }
+.dup-thumb.deleted { opacity: 0.35; }
+.dup-thumb.deleted .dt-inner { filter: grayscale(1); }
+.dup-deleted-overlay { position: absolute; inset: 0; display: grid; place-items: center; color: var(--bad); background: rgba(0,0,0,0.5); }
+.dup-deleted-overlay svg { width: 16px; height: 16px; }
 .dt-inner { width: 100%; height: 100%; }
 .dup-size { margin-left: auto; font-size: 11px; color: var(--faint); }
 .btn.danger-btn { background: var(--bad); color: #fff; border-color: transparent; font-weight: 600; }
 .btn.danger-btn:hover { filter: brightness(1.08); }
+.btn.danger-btn:disabled { opacity: 0.5; cursor: default; }
 
 /* ---------- lock screen ---------- */
 .lockscreen { position: fixed; top: var(--bar-h); left: 0; right: 0; bottom: 0; z-index: 300; background: var(--bg); display: flex; align-items: center; justify-content: center; }

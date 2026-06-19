@@ -200,6 +200,12 @@ export interface LastSyncInfo {
   last_sync: number;
 }
 
+export interface DeleteResult {
+  deleted: number;
+  failed: number;
+  errors: string[];
+}
+
 // ─── Commands ──────────────────────────────────────────────────────────────
 
 export const api = {
@@ -242,7 +248,7 @@ export const api = {
     invoke("remove_from_collection", { cid, path }),
   deleteCollection: (cid: number) => invoke("delete_collection", { cid }),
   listCollectionItems: (cid: number) => invoke<string[]>("list_collection_items", { cid }),
-  deleteMedia: (paths: string[]) => invoke("delete_media", { paths }),
+  deleteMedia: (paths: string[]) => invoke<DeleteResult>("delete_media", { paths }),
   getDownloadLog: (limit?: number) => invoke<DownloadLogEntry[]>("get_download_log", { limit }),
   clearDownloadLog: () => invoke("clear_download_log"),
   getAutoSyncStatus: () => invoke<LastSyncInfo[]>("get_auto_sync_status"),
