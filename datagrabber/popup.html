@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="header">
+    <div class="logo">V</div>
+    <div class="title">VANTA Credential Helper</div>
+  </div>
+
+  <div id="status-bar" class="status-bar">
+    <div id="status-dot" class="status-dot idle"></div>
+    <div id="status-text" class="status-text">Checking...</div>
+  </div>
+
+  <div id="wrong-site" class="warning" style="display:none">
+    Open <strong>onlyfans.com</strong> first, then click this extension.
+  </div>
+
+  <div id="capture-ui" style="display:none">
+    <div class="section">
+      <div class="section-header">
+        <span>Cookie</span>
+        <button id="btn-copy-cookies" class="btn-icon" title="Copy">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+      <textarea id="val-cookies" class="val-box" readonly rows="3"></textarea>
+      <div id="cookie-count" class="meta"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span>x-bc</span>
+        <button id="btn-copy-xbc" class="btn-icon" title="Copy">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+      <input id="val-xbc" class="val-input" readonly>
+      <div id="xbc-time" class="meta"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span>User-Agent</span>
+        <button id="btn-copy-ua" class="btn-icon" title="Copy">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+      <textarea id="val-ua" class="val-box" readonly rows="2"></textarea>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span>Auth ID</span>
+        <button id="btn-copy-authid" class="btn-icon" title="Copy">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+      <input id="val-authid" class="val-input" readonly>
+    </div>
+
+    <div class="actions">
+      <button id="btn-copy-all" class="btn-primary">Copy for VANTA</button>
+      <button id="btn-refresh" class="btn-secondary" title="Refresh">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      </button>
+    </div>
+
+    <div class="instructions">
+      Paste these into VANTA Settings under Credentials.
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

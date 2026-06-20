@@ -144,14 +144,24 @@ Built with Tauri 2 · Rust core · React 19 · TypeScript
 | `Ctrl + Shift + H` | Panic — hide & lock VANTA |
 
 ## Getting Started
-
 ### Prerequisites
 
-| Requirement | Version |
-|---|---|
-| [Node.js](https://nodejs.org/) | 22+ |
-| [Rust](https://rustup.rs/) | stable |
-| Windows | 10/11 (WebView2 runtime pre-installed) |
+- [Node.js](https://nodejs.org/) 22+
+- [Rust](https://rustup.rs/) (stable)
+- Windows 10/11 (WebView2 runtime is pre-installed on Win10/11)
+- [Chrome](https://www.google.com/chrome/) (for the Credential Helper extension)
+
+### Getting Your Credentials
+
+VANTA needs your OnlyFans authentication data to connect. Use the included Chrome extension:
+
+1. Load the `datagrabber/` folder as an unpacked extension in Chrome (`chrome://extensions` > Developer mode > Load unpacked)
+2. Log into OnlyFans and browse a few pages
+3. Click the VANTA Credential Helper extension icon
+4. Click "Copy for VANTA"
+5. Paste the values into VANTA Settings > Credentials
+
+See [`datagrabber/README.md`](datagrabber/README.md) for details.
 
 ### Development
 
@@ -176,6 +186,12 @@ Output is generated in `src-tauri/target/release/`.
 
 ```
 VANTA/
+├── datagrabber/                # Chrome extension (credential helper)
+│   ├── manifest.json           #   Extension manifest (MV3)
+│   ├── background.js           #   Service worker — captures x-bc
+│   ├── popup.html              #   Extension popup UI
+│   ├── popup.css               #   Dark theme styles
+│   └── popup.js                #   Popup logic
 ├── src/                        # Frontend (React + TypeScript)
 │   ├── components/             #   Reusable UI components
 │   ├── screens/                #   Top-level views (Home, Gallery, etc.)

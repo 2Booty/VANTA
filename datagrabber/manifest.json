@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "VANTA Credential Helper",
+  "version": "1.0.0",
+  "description": "Captures OnlyFans authentication credentials for use with VANTA desktop client",
+  "permissions": [
+    "webRequest",
+    "cookies",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://onlyfans.com/*",
+    "https://*.onlyfans.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "VANTA Credential Helper"
+  }
+}
